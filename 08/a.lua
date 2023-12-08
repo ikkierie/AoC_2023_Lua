@@ -1,7 +1,7 @@
 local stream = require "stream"
 
 local directions, map do
-    local f <close>  = assert(io.open([[input.txt]]))
+    local f <close> = assert(io.open([[input.txt]]))
     directions = f:read("*l", "*l")
     map        = {}
     for line in f:lines() do
