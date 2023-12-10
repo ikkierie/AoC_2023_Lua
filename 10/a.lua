@@ -1,5 +1,6 @@
-require "utils"
-local point = require "point"
+local point  = require "point"
+local seq    = require "seq"
+local stream = require "stream"
 
 local directions = {
     north = point {  0, -1 },
@@ -64,5 +65,3 @@ while queue[1] do
 end
 
 print(seq.from.values(visited):reduce(math.max))
-
--- DON'T FORGET TO MOVE TO b.lua FOR PART B

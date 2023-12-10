@@ -22,8 +22,6 @@ local pipes = {
 
 local grid  = {}
 local y     = 1
-local max_x = 0
-local max_y = 0
 for line in io.lines([[input.txt]]) do
     for x, pipe in line:gmatch("()(.)") do
         local pos = point { x, y }
@@ -37,11 +35,13 @@ for line in io.lines([[input.txt]]) do
             end
             grid[pos] = neighbours
         end
-        max_x = math.max(x, max_x)
     end
     y = y + 1
 end
-max_y = y - 1
+local max_y = y - 1
+local max_x = stream.from.keys(grid)
+    :map_field("x")
+    :reduce(math.max)
 
 for _, dir in pairs(directions) do
     local pos       = grid.start + dir
@@ -51,44 +51,43 @@ for _, dir in pairs(directions) do
     end
 end
 
-local visited = {}
-local queue   = { grid.start }
-while queue[1] do
-    local cur = table.remove(queue, 1)
+-- map out the initial loop structure like in part A
+local loop  = {}
+local queue = seq { grid.start }
+while #queue > 0 do
+    local cur = queue:remove(1)
     for neighbour in pairs(grid[cur]) do
-        if not visited[neighbour] then
-            table.insert(queue, neighbour)
-            visited[neighbour] = true
+        if not loop[neighbour] then
+            queue:insert(neighbour)
+            loop[neighbour] = true
         end
     end
 end
 
-for _, pos in ipairs(seq.from.keys(visited)) do
+-- interpolate points on the loop between the given points
+for _, pos in ipairs(seq.from.keys(loop)) do
     local neighbours = grid[pos]
     for neighbour in pairs(neighbours) do
-        visited[pos + (neighbour - pos) / 2] = true
+        loop[pos + (neighbour - pos) / 2] = true
     end
 end
 
 local function dijkstra(start)
     local is_outside
     local seen  = { [start] = true }
-    local queue = { start }
-    while queue[1] do
-        local cur = table.remove(queue, 1)
+    local queue = seq { start }
+    while #queue > 0 do
+        local cur = queue:remove(1)
         for _, dir in pairs(directions) do
             local neighbour = cur + dir / 2
             if 
-                neighbour.x <= 0 or neighbour.x >= (max_x + 1) or 
-                neighbour.y <= 0 or neighbour.y >= (max_y + 1) 
+                (neighbour.x < 0) or (neighbour.x >= max_x + 1) or 
+                (neighbour.y < 0) or (neighbour.y >= max_y + 1) 
             then
                 is_outside = true
-            elseif not visited[neighbour] then
-                if not seen[neighbour] then
-                    table.insert(queue, neighbour)
-                    seen[neighbour] = true
-                end
-            else
+            elseif not (loop[neighbour] or seen[neighbour]) then
+                queue:insert(neighbour)
+                seen[neighbour] = true
             end
         end
     end
@@ -97,12 +96,15 @@ end
 
 local inside  = {}
 local outside = {}
-local loop    = visited
 local area = 0
 for pos in pairs(grid) do
     if not (loop[pos] or outside[pos] or inside[pos]) and point.type(pos) then
         local seen, is_outside = dijkstra(pos)
-        if not is_outside then
+        if is_outside then
+            for pos in pairs(seen) do
+                outside[pos] = true
+            end
+        else
             area = area + stream.from.keys(seen)
                 :where(function(p) 
                     return  p.x % 1 == 0 
@@ -111,10 +113,6 @@ for pos in pairs(grid) do
                 :count()
             for pos in pairs(seen) do
                 inside[pos] = true
-            end
-        else
-            for pos in pairs(seen) do
-                outside[pos] = true
             end
         end
     end
