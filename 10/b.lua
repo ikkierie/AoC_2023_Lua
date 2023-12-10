@@ -72,7 +72,7 @@ for _, pos in ipairs(seq.from.keys(loop)) do
     end
 end
 
-local function dijkstra(start)
+local function explore(start)
     local is_outside
     local seen  = { [start] = true }
     local queue = seq { start }
@@ -99,7 +99,7 @@ local outside = {}
 local area = 0
 for pos in pairs(grid) do
     if not (loop[pos] or outside[pos] or inside[pos]) and point.type(pos) then
-        local seen, is_outside = dijkstra(pos)
+        local seen, is_outside = explore(pos)
         if is_outside then
             for pos in pairs(seen) do
                 outside[pos] = true
