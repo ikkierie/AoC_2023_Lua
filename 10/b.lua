@@ -81,8 +81,8 @@ local function explore(start)
         for _, dir in pairs(directions) do
             local neighbour = cur + dir / 2
             if 
-                (neighbour.x < 0) or (neighbour.x >= max_x + 1) or 
-                (neighbour.y < 0) or (neighbour.y >= max_y + 1) 
+                (neighbour.x < 0) or (neighbour.x > max_x) or 
+                (neighbour.y < 0) or (neighbour.y > max_y) 
             then
                 is_outside = true
             elseif not (loop[neighbour] or seen[neighbour]) then
