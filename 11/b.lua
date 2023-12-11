@@ -31,8 +31,8 @@ for y, row in ipairs(input_space) do
     for x, pos in ipairs(row) do
         if pos == "#" then
             galaxies[point { 
-                x + (empty_cols[x]), 
-                y + (empty_rows[y]),
+                x + empty_cols[x],
+                y + empty_rows[y],
             }] = true
         end
     end
@@ -42,8 +42,8 @@ local distances = {}
 for g1, i1 in pairs(galaxies) do
     for g2, i2 in pairs(galaxies) do
         if g1 ~= g2 then
-            distances[set { g1, g2 }] = 
-                math.abs(g1.x - g2.x) + 
+            distances[set { g1, g2 }] =
+                math.abs(g1.x - g2.x) +
                 math.abs(g1.y - g2.y)
         end
     end
