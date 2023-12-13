@@ -9,7 +9,7 @@ local iter = stream.from.lines([[input.txt]])
 
 local rows = 0
 local cols = 0
-for z, pattern in iter:enumerate():iter__u() do
+for pattern in iter do
     local x = #pattern[1]
     local y = #pattern
     for row = 1, (y - 1) do
@@ -32,7 +32,7 @@ for z, pattern in iter:enumerate():iter__u() do
     for col = 1, (x - 1) do
         local d     = math.min(col, x - col)
         local left  = pattern:slice({}, { col - d + 1, col      })
-        local right = pattern:slice({}, { col + 1,     col + d  }):map(seq.reverse)
+        local right = pattern:slice({}, { col + 1,     col + d  }):apply(seq.reversed)
         for y = 1, #left do
             for x = 1, #left[y] do
                 local before = left[y][x]
