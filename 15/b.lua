@@ -1,4 +1,3 @@
-local func = require "func"
 local seq  = require "seq"
 
 local input do
