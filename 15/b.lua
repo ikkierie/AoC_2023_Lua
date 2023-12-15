@@ -1,4 +1,5 @@
-local seq = require "seq"
+local func = require "func"
+local seq  = require "seq"
 
 local input do
     local f <close> = assert(io.open([[input.txt]]))
@@ -14,13 +15,10 @@ local function hash(str)
 end
 
 local map = {}
-local sum = 0
 for label, type, focal_len in input:gmatch("(%a+)([=-])(%d*),?") do
-    local box = hash(label)
-    map[box]  = map[box] or seq {}
-    local function find_lens(lens)
-        return lens.label == label
-    end
+    local find_lens = (function(lens) return lens.label == label end)
+    local box       = hash(label)
+    map[box]        = map[box] or seq {}
     if type == "-" then
         map[box]:removeif(find_lens)
     else
@@ -33,8 +31,8 @@ for label, type, focal_len in input:gmatch("(%a+)([=-])(%d*),?") do
 end
 
 local sum = 0
-for box = 0, 255 do
-    for i, lens in ipairs(map[box] or {}) do
+for box, lenses in pairs(map) do
+    for i, lens in ipairs(lenses) do
         sum = sum + (box + 1) * i * lens.focal_len
     end
 end
