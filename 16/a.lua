@@ -59,7 +59,7 @@ while #queue > 0 do
 
     energised[x .. "," .. y] = true
 
-    local x, y = move[dir](x, y)
+    x, y = move[dir](x, y)
     if grid[y] and grid[y][x] then
         for _, next in ipairs(turn[grid[y][x]][dir]) do
             local next = { next, x, y }
